@@ -56,7 +56,8 @@
 </div>
 
 <% if @total_entries > 0 %>
-<% form_tag(translate_path) do %>
+<!-- don't use form_tag to avoid authenticity token issues -->
+<form method="post" action="<%= translate_path %>">
   <div>
       <%= hidden_field_tag(:filter, params[:filter], :id => "hid_filter") %>
       <%= hidden_field_tag(:sort_by, params[:sort_by], :id => "hid_sort_by") %>
@@ -107,7 +108,7 @@
 	</p>
 </div>
 <% end %>
-<% end %>
+</form>
 
 <div class="paging">
   <%= render :partial => 'pagination', :locals => {:total_entries => @total_entries, :per_page => per_page} %>
