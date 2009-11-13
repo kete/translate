@@ -140,6 +140,24 @@ namespace :translate do
     Translate::Storage.new(ENV['TO'].to_sym).write_to_file
   end
 
+  desc "List keys that have changed I18n texts between YAML file ENV['FROM_FILE'] and YAML file ENV['TO_FILE']. Set ENV['VERBOSE'] to see changes"
+  task :changed => :environment do
+    from_hash = Translate::Keys.to_shallow_hash(Translate::File.new(ENV['FROM_FILE']).read)
+    to_hash = Translate::Keys.to_shallow_hash(Translate::File.new(ENV['TO_FILE']).read)
+    from_hash.each do |key, from_value|
+      if (to_value = to_hash[key]) && to_value != from_value
+        key_without_locale = key[/^[^.]+\.(.+)$/, 1]
+        if ENV['VERBOSE']
+          puts "KEY: #{key_without_locale}"
+          puts "FROM VALUE: '#{from_value}'"
+          puts "TO VALUE: '#{to_value}'"
+        else
+          puts key_without_locale
+        end
+      end
+    end
+  end
+
   desc 'Create a new translation based on the English translation (pass in LOCALE_CODE - a two letter country code, and LOCALE_NAME - the translated name of the language you\'re adding.)'
   task :create do
     raise "LOCALE_CODE (two letter country code) is not set. Please set one before running the rake task." unless ENV['LOCALE_CODE']
