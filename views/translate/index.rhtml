@@ -68,9 +68,11 @@
   </div>
   <div class="translations">
 	  <h2>Translations from <%= @from_locale %> to <%= @to_locale %></h2>
-    <p class="translate">
-	    <%= submit_tag "Save Translations" %>
-	  </p>
+	  <noscript>
+	    <p class="translate">
+	      <%= submit_tag "Save Translations" %>
+	    </p>
+	  </noscript>
 	  <% @paginated_keys.each do |key| 
 	      from_text = lookup(@from_locale, key)
 	      to_text = lookup(@to_locale, key)
@@ -90,6 +92,11 @@
 		<% else %>
 			<%= text_field_tag(field_name, to_text, :size => line_size, :id => key) %>
 		<% end %>
+		<span class='translation-indicators'>
+		  <span class='saving' style='display:none;'><img src='/images/indicator.gif' width='16' height='16' alt='Saving translation.' /> Saving....</span>
+		  <span class='saved' style='display:none;'><img src='/images/tick.gif' width='16' height='16' alt='Translation saved.' /> Saved.</span>
+		  <span class='failed' style='display:none;'><img src='/images/cross.png' width='16' height='16' alt='Translation save failed.' /> Save failed.</span>
+		</span>
 		</p>
 		<p>
 		  <em>
@@ -103,9 +110,11 @@
 		</p>
 	</div>  
 <% end %>
-  <p class="translate">
-    <%= submit_tag "Save Translations" %>
-	</p>
+	<noscript>
+	  <p class="translate">
+	    <%= submit_tag "Save Translations" %>
+	  </p>
+	</noscript>
 </div>
 <% end %>
 </form>
@@ -113,3 +122,5 @@
 <div class="paging">
   <%= render :partial => 'pagination', :locals => {:total_entries => @total_entries, :per_page => per_page} %>
 </div>
+
+<%= watch_for_field_changes_js %>

@@ -21,12 +21,27 @@ class TranslateController < ActionController::Base
   end
   
   def translate
-    I18n.backend.store_translations(@to_locale, Translate::Keys.to_deep_hash(params[:key]))
-    Translate::Storage.new(@to_locale).write_to_file
-    Translate::Log.new(@from_locale, @to_locale, params[:key].keys).write_to_file
-    force_init_translations # Force reload from YAML file
-    flash[:notice] = "Translations stored"
-    redirect_to params.slice(:filter, :sort_by, :key_type, :key_pattern, :text_type, :text_pattern).merge({:action => :index})
+    # If we are translating a single field (javascript is enabled)
+    # change the data to match the order we need
+    if request.format.js?
+      params[:key] = { params[:key] => params[:value] }
+      @from_locale, @to_locale = params[:from], params[:to]
+    end
+
+    unless params[:key].blank?
+      I18n.backend.store_translations(@to_locale, Translate::Keys.to_deep_hash(params[:key]))
+      Translate::Storage.new(@to_locale).write_to_file
+      Translate::Log.new(@from_locale, @to_locale, params[:key].keys).write_to_file
+      force_init_translations # Force reload from YAML file
+    end
+
+    respond_to do |format|
+      format.js { render :text => 'OK', :layout => false }
+      format.html do
+        flash[:notice] = "Translations stored"
+        redirect_to params.slice(:filter, :sort_by, :key_type, :key_pattern, :text_type, :text_pattern).merge({:action => :index})
+      end
+    end
   end
 
   def reload

@@ -18,6 +18,7 @@
               return '{{' + match[1] + '}}';
             });
             Form.Element.setValue(id, result_text);
+            save_translation_string($(id));
           }
         });
 
@@ -274,7 +275,7 @@
 		margin:0 1em 1em 1.6em;
 	}
 	div.translation input, div.translation textarea{
-		width:98%;
+		width:85%;
 		margin:1em 0;
 		display:inline-block;
 		padding:0.3em;
